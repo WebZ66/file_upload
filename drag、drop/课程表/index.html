@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        width: 800px;
+        height: 600px;
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+      .left {
+        width: 60px;
+        height: 80%;
+        border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .item {
+        width: 80%;
+        height: 30px;
+        background-color: #eee;
+
+        font-size: 14px;
+        text-align: center;
+        line-height: 30px;
+        cursor: pointer;
+        margin: 5px auto;
+      }
+      .right {
+        width: 600px;
+        height: 80%;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      th {
+        width: 100px;
+        height: 30px;
+        border: 1px solid #000;
+      }
+      td {
+        width: 100px;
+        height: 30px;
+        border: 1px solid #000;
+        text-align: center;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <div data-drop="copy" class="item" draggable="true">语文</div>
+        <div data-drop="copy" class="item" draggable="true">数学</div>
+        <div data-drop="copy" class="item" draggable="true">英语</div>
+      </div>
+      <div class="right">
+        <table>
+          <tr>
+            <th></th>
+            <th>周一</th>
+            <th>周二</th>
+            <th>周三</th>
+            <th>周四</th>
+            <th>周五</th>
+          </tr>
+          <tr>
+            <td>第一节课</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>第二节课</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>第三节课</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>第四节课</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script>
+      const right = document.querySelector('.right')
+      const left = document.querySelector('.left')
+      const container = document.querySelector('.container')
+      let source = null
+      left.ondragstart = function (e) {
+        console.log(e.target)
+        e.dataTransfer.effectAllowed = 'copy'
+        source = e.target
+      }
+      left.ondragover = function (e) {
+        e.preventDefault()
+      }
+      left.ondrop = function (e) {
+        source.remove()
+      }
+      right.ondragstart = function (e) {
+        console.log(e.target)
+        e.dataTransfer.effectAllowed = 'copy'
+        source = e.target
+      }
+      right.ondragover = function (e) {
+        e.preventDefault()
+      }
+      right.ondrop = function (e) {
+        let moveEle = source
+        let targetEle = e.target
+        targetEle.innerHTML = ''
+        let cloneEle = moveEle.cloneNode(true)
+        if (moveEle.dataset.drop == 'copy') {
+          cloneEle.dataset.drop = 'move'
+          targetEle.appendChild(cloneEle)
+        } else {
+          source.remove()
+          targetEle.appendChild(cloneEle)
+        }
+      }
+    </script>
+  </body>
+</html>

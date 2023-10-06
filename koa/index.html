@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /*
+      这是一道典型的koa洋葱圈模型，首先结果是1s 2s 3 2e 1e
+      */
+      class TaskPro {
+        constructor() {
+          this._taskList = []
+          this._isRunning = false
+          this._currentIndex = 0
+          this._next = async () => {
+            //next函数的作用是立刻调用下一个任务,因为await next(),所以
+            //等到下一个任务完成后，再将其剩余任务和当前函数完成推入微任务队列。
+            this._currentIndex++
+            await this._runTask()
+          }
+        }
+        addTask(taskPro) {
+          this._taskList.push(taskPro)
+        }
+        run() {
+          if (this._isRunning || !this._taskList.length) {
+            return
+          }
+          this._isRunning = true
+          //运行任务，即将任务取出来运行
+          this._runTask()
+        }
+        /*
+          取出一个任务执行
+        */
+        async _runTask() {
+          if (this._currentIndex >= this._taskList.length) {
+            this._isRunning = false
+            this._taskList = []
+            this._currentIndex = 0
+            return
+          }
+          let i = this._currentIndex
+          let task = this._taskList[this._currentIndex]
+          //任务执行时需要传递一个next函数，至于需不需要调用看用户
+          await task(this._next)
+          //如果没有手动调用next，那么就自动帮它调用，执行下一个任务
+          let j = this._currentIndex
+          if (i == j) {
+            this._next()
+          }
+        }
+      }
+      const t = new TaskPro()
+      t.addTask(async next => {
+        console.log('1', 'start')
+        await next()
+        console.log('1', 'end')
+      })
+      t.addTask(async next => {
+        console.log('2', 'start')
+        await next()
+        console.log('2', 'end')
+      })
+      t.addTask(() => {
+        console.log('3')
+      })
+      t.run()
+    </script>
+  </body>
+</html>
